@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 const tabs = [
   { name: 'Home', path: '/' },
   { name: 'People', path: '/people' },
-  { name: 'DailyFeed', path: '/daily-feed' },
+  { name: 'DailyFeed', path: '/dailyFeed' },
   { name: 'Groups', path: '/groups' },
   { name: 'Profile', path: '/profile' },
 ]
