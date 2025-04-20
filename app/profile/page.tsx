@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import { useUserData } from '../hooks/useUserData';
 import ProtectedRoute from '../components/ProtectedRoute';
 
-export default function ProfilePage() {
+export default function Profile() {
   const router = useRouter();
   const { user, userData, loading } = useUserData(); 
 
