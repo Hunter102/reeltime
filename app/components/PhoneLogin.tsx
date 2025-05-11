@@ -48,15 +48,25 @@ export default function PhoneLogin() {
     formattedPhone.replace(/\s/g, '');
 
   // ✅ Detect if app is running in standalone (installed) mode
+  const [isPWAActive, setIsPWAActive] = useState(false);
   useEffect(() => {
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone;
 
     if (isStandalone) {
+      setIsPWAActive(true);
       setStep(1);
     } else {
       setStep(0); // Default to install step if not installed
+    }
+  }, []);
+
+  // Mobile detection (optional)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (window.innerWidth <= 768) { // Example condition for mobile devices
+      setIsMobile(true);
     }
   }, []);
 
@@ -69,9 +79,9 @@ export default function PhoneLogin() {
       e.preventDefault(); // Prevent the browser from showing the default install prompt
       setDeferredPrompt(e); // Store the event
     };
-    
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
@@ -159,8 +169,13 @@ export default function PhoneLogin() {
       <div className="max-w-md w-full space-y-6">
         <div id="recaptcha-container" />
 
+        {/* PWA Active Flag for Debugging */}
+        {isPWAActive && (
+          <div className="absolute top-0 right-0 p-4 text-green-500">PWA Active</div>
+        )}
+
         {/* 🛑 Step 0: Prompt to install */}
-        {step === 0 && (
+        {step === 0 && !isMobile && (
           <>
             <h2 className="text-2xl font-bold">Install the App</h2>
             <p className="text-sm text-gray-300 mt-2">
