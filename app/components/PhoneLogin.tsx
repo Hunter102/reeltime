@@ -69,9 +69,9 @@ export default function PhoneLogin() {
       e.preventDefault(); // Prevent the browser from showing the default install prompt
       setDeferredPrompt(e); // Store the event
     };
-
+    
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
+    
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
@@ -79,8 +79,8 @@ export default function PhoneLogin() {
 
   // Function to trigger the custom install prompt
   const handleInstallClick = () => {
-    console.log("Installing...");
     if (deferredPrompt) {
+      console.log("Installing...");
       deferredPrompt.prompt(); // Show the native install prompt
       deferredPrompt.userChoice.then((choiceResult: any) => {
         if (choiceResult.outcome === 'accepted') {
@@ -90,6 +90,8 @@ export default function PhoneLogin() {
         }
         setDeferredPrompt(null); // Clear the prompt after use
       });
+    } else {
+      console.log("No deferred prompt available");
     }
   };
 
