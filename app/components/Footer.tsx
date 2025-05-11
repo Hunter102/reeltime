@@ -8,7 +8,7 @@ const tabs = [
   { name: 'People', path: '/people' },
   { name: 'DailyFeed', path: '/dailyFeed' },
   { name: 'Groups', path: '/groups' },
-  { name: 'Profile', path: '/profile' },
+  { name: 'Profile', path: '/userProfile' },
 ]
 
 export default function Footer() {

@@ -1,16 +1,13 @@
-// app/share/page.tsx
 'use client';
 
 import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 
 export default function SharePage() {
-  const searchParams = useSearchParams();
-
   useEffect(() => {
-    const title = searchParams.get('title');
-    const text = searchParams.get('text');
-    const url = searchParams.get('url');
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get('title');
+    const text = params.get('text');
+    const url = params.get('url');
 
     if (url) {
       const newLink = {
@@ -23,7 +20,7 @@ export default function SharePage() {
       const existing = JSON.parse(localStorage.getItem('sharedLinks') || '[]');
       localStorage.setItem('sharedLinks', JSON.stringify([...existing, newLink]));
     }
-  }, [searchParams]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
