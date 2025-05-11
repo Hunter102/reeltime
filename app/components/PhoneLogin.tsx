@@ -169,12 +169,6 @@ export default function PhoneLogin() {
       <div className="max-w-md w-full space-y-6">
         <div id="recaptcha-container" />
 
-        {/* PWA Active Flag for Debugging */}
-        {isPWAActive && (
-          <div className="absolute top-0 right-0 p-4 text-green-500">PWA Active</div>
-        )}
-
-        {/* 🛑 Step 0: Prompt to install */}
         {step === 0 && !isMobile && (
           <>
             <h2 className="text-2xl font-bold">Install the App</h2>
@@ -187,6 +181,22 @@ export default function PhoneLogin() {
             >
               Install App
             </button>
+          </>
+        )}
+
+        {/* Display install instructions on mobile */}
+        {step === 0 && isMobile && (
+          <>
+            <h2 className="text-2xl font-bold">Install the App</h2>
+            <p className="text-sm text-gray-300 mt-2">
+              To install this app, follow the instructions for your device:
+            </p>
+            <p className="text-sm text-gray-300 mt-2">
+              <strong>iOS:</strong> Tap the share button at the bottom of the screen, then tap "Add to Home Screen."
+            </p>
+            <p className="text-sm text-gray-300 mt-2">
+              <strong>Android:</strong> Tap the three dots in the top-right corner and then select "Add to Home Screen."
+            </p>
           </>
         )}
 
