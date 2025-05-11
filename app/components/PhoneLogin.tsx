@@ -22,13 +22,76 @@ declare global {
 }
 
 export default function PhoneLogin() {
-  const [step, setStep] = useState(1);
-  const [phone, setPhone] = useState('');
+  const [step, setStep] = useState(0); // Start with step 0
   const [code, setCode] = useState('');
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const router = useRouter();
+
+  const [phoneInput, setPhoneInput] = useState('+1 '); // display value
+  const formatPhoneForDisplay = (value: string) => {
+    const cleaned = value.replace(/[^\d+]/g, ''); // allow only digits and initial +
+    const digits = cleaned.startsWith('+') ? cleaned.slice(1) : cleaned;
+
+    let formatted = '+';
+    for (let i = 0; i < digits.length && i < 11; i++) {
+      if (i === 0) formatted += digits[i] + ' ';
+      else if (i === 3 || i === 6) formatted += digits[i] + ' ';
+      else formatted += digits[i];
+    }
+
+    return formatted.trim();
+  };
+
+  const getFirebasePhone = (formattedPhone: string) =>
+    formattedPhone.replace(/\s/g, '');
+
+  // ✅ Detect if app is running in standalone (installed) mode
+  useEffect(() => {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone;
+
+    if (isStandalone) {
+      setStep(1);
+    } else {
+      setStep(0); // Default to install step if not installed
+    }
+  }, []);
+
+  // Install prompt setup
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    // Listen for the beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault(); // Prevent the browser from showing the default install prompt
+      setDeferredPrompt(e); // Store the event
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  // Function to trigger the custom install prompt
+  const handleInstallClick = () => {
+    console.log("Installing...");
+    if (deferredPrompt) {
+      deferredPrompt.prompt(); // Show the native install prompt
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        setDeferredPrompt(null); // Clear the prompt after use
+      });
+    }
+  };
 
   useEffect(() => {
     if (!window.recaptchaVerifier) {
@@ -42,7 +105,8 @@ export default function PhoneLogin() {
 
   const sendCode = async () => {
     try {
-      const result = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier!);
+      const rawPhone = getFirebasePhone(phoneInput);
+      const result = await signInWithPhoneNumber(auth, rawPhone, window.recaptchaVerifier!);
       setConfirmationResult(result);
       setStep(2);
     } catch (err) {
@@ -93,14 +157,31 @@ export default function PhoneLogin() {
       <div className="max-w-md w-full space-y-6">
         <div id="recaptcha-container" />
 
+        {/* 🛑 Step 0: Prompt to install */}
+        {step === 0 && (
+          <>
+            <h2 className="text-2xl font-bold">Install the App</h2>
+            <p className="text-sm text-gray-300 mt-2">
+              To continue, please install this app by clicking the button below:
+            </p>
+            <button
+              onClick={handleInstallClick}
+              className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mt-4"
+            >
+              Install App
+            </button>
+          </>
+        )}
+
+        {/* Step 1: Enter phone */}
         {step === 1 && (
           <>
-            <h2 className="text-2xl font-bold">Step 1: Phone Verification</h2>
+            <h2 className="text-2xl font-bold">Phone Verification</h2>
             <input
               type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+1234567890"
+              value={phoneInput}
+              onChange={(e) => setPhoneInput(formatPhoneForDisplay(e.target.value))}
+              placeholder="+1 234 567 8910"
               className="w-full px-4 py-2 text-white rounded"
             />
             <button
@@ -112,9 +193,10 @@ export default function PhoneLogin() {
           </>
         )}
 
+        {/* Step 2: Enter OTP */}
         {step === 2 && (
           <>
-            <h2 className="text-2xl font-bold">Step 2: Enter OTP</h2>
+            <h2 className="text-2xl font-bold">Enter Code</h2>
             <input
               type="text"
               value={code}
@@ -131,9 +213,10 @@ export default function PhoneLogin() {
           </>
         )}
 
+        {/* Step 3: Complete profile */}
         {step === 3 && (
           <>
-            <h2 className="text-2xl font-bold">Step 3: Complete Profile</h2>
+            <h2 className="text-2xl font-bold">Complete Profile</h2>
             <input
               type="text"
               value={username}
