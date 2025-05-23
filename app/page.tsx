@@ -21,6 +21,11 @@ export default function Canvas() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
+      // navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      //   for(let registration of registrations) {
+      //     registration.unregister()
+      //   }
+      // });
       navigator.serviceWorker.register('/service-worker.js')
         .then((reg) => {
           console.log('Service worker registered:', reg);

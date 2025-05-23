@@ -1,6 +1,9 @@
-// lib/firebase.js
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  inMemoryPersistence, // or browserSessionPersistence
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
@@ -16,6 +19,12 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+
+// 🚫 Disable persistence (no auto login)
+setPersistence(auth, inMemoryPersistence).catch((error) => {
+  console.error("Failed to set persistence:", error);
+});
+
 const db = getFirestore(app);
 
 // Optional: guard analytics since it only works in the browser

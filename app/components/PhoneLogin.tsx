@@ -79,7 +79,7 @@ export default function PhoneLogin() {
       e.preventDefault(); // Prevent the browser from showing the default install prompt
       setDeferredPrompt(e); // Store the event
     };
-
+    
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
