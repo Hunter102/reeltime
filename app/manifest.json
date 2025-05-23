@@ -1,19 +1,28 @@
 {
-  "name": "Reeltime",
-  "short_name": "Reeltime",
+  "name": "Unreel",
+  "short_name": "unreel",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Nut4_2.png",
-      "sizes": "300x300",
+      "src": "/unreel.png",
+      "sizes": "970x628",
       "type": "image/png"
     }
   ],
   "ios": {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent"
+  },
+  "share_target": {
+  "action": "/share-target",
+  "method": "GET",
+  "params": {
+    "title": "title",
+    "text": "text",
+    "url": "url"
   }
+}
 }
